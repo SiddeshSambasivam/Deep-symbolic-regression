@@ -16,5 +16,4 @@ class TestFunctions(unittest.TestCase):
         torch.testing.assert_allclose(torch.sigmoid(x), sig.torch(x))
         print(sig.name)
 
-
         
