@@ -1,5 +1,4 @@
 import copy
-from turtle import pd
 from typing import List, Union
 import sympy as sp
 

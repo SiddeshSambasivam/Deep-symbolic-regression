@@ -1,4 +1,3 @@
-from turtle import forward
 import torch
 import typing as T
 from .functions import Function, count_double_inputs, default_funcs
