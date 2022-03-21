@@ -1,3 +1,4 @@
+from turtle import forward
 import torch
 import typing as T
 from .functions import Function, count_double_inputs, default_funcs
@@ -44,8 +45,30 @@ class SymbolicLayer(torch.nn.Module):
 
         return self.output
 
-class SymbolicNN:
-    """A NN which has SymbolicLayer as hidden layers"""
+    def get_weights(self):
+        return self.W.cpu().detach().numpy()
 
-    def __init__(self) -> None:
-        raise NotImplementedError
+class SymbolicNN(torch.nn.Module):
+    """A NN which has SymbolicLayer as hidden layers and produces one output"""
+
+    def __init__(self, depth:int, funcs: T.Type[Function], init_std:torch.float=0.1) -> None:
+
+        super(SymbolicNN, self).__init__()
+        
+        self.funcs = funcs
+        self.std = init_std
+        self.n_layer_inp = [1] + [len(funcs)]*depth # Each feature has its own NN, so input has only one feature
+
+        self.layers = [SymbolicLayer(self.n_layer_inp[i], self.funcs, self.std) for i in range(depth)]
+        self.out_layer = torch.nn.Parameter(torch.randn(self.n_layer_inp[-1], 1))
+
+        self.hidden_layers = torch.nn.Sequential(*self.layers)
+    
+    def forward(self, x) -> torch.Tensor:
+        z = self.hidden_layers(x)
+        out = torch.matmul(z, self.out_layer)
+        return out        
+
+    def get_weights(self) -> torch.Tensor:
+        """Returns the weights of the NN"""
+        return [layer.get_weights() for layer in self.hidden_layers] + [self.out_layer.cpu().detach().numpy()]
