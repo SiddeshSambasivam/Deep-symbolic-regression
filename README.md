@@ -3,3 +3,5 @@
 <p align="center">
     <img src="./assets/sym-layer-work.gif"/>
 </p>
+
+Todo: Add documentation for the trainer
