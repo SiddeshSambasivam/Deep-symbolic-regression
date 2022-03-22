@@ -1,6 +1,8 @@
 import unittest
-import src as P
 import torch
+
+from model import SymbolicNN
+from functions import default_funcs
 
 class TestSymbolicNN(unittest.TestCase):
 
@@ -9,10 +11,10 @@ class TestSymbolicNN(unittest.TestCase):
         dim = (100, 1)
         input_dim = dim[1]
 
-        n_funcs = len(P.default_funcs)
+        n_funcs = len(default_funcs)
         x = torch.randn(dim)
 
-        nn = P.SymbolicNN(2, P.default_funcs)
+        nn = SymbolicNN(2, default_funcs)
         out = nn(x)
 
         assert out.shape == (100, 1)
