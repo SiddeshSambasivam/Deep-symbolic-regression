@@ -2,7 +2,7 @@ import copy
 from typing import List, Union
 import sympy as sp
 
-from src.functions import Function, BinaryInpFunction, count_double_inputs
+from functions import Function, BinaryInpFunction, count_double_inputs
 
 class IncorrectMatrixDimension(Exception):
     def __init__(self, expected:tuple, received:tuple) -> None:
@@ -26,15 +26,14 @@ def filter_weights(w, threshold:float):
     m,n = w.shape
     for i in range(m):
         for j in range(n):
-            if abs(w[i][j]) < threshold:
-                w[i][j] = 0
+            if abs(w[i, j]) < threshold:
+                w[i, j] = 0
     return w
 
 def apply_activation_fns(w, funcs, n_double):
 
     w = sp.Matrix(w)
     n_single = len(funcs) - n_double
-
     if n_double == 0:
         for i in range(w.shape[0]):
             for j in range(w.shape[1]):
@@ -54,8 +53,12 @@ def apply_activation_fns(w, funcs, n_double):
                 w_new[i, fn_idx] = funcs[fn_idx](w[i, idx], w[i, idx+1])
                 fn_idx += 1
                 idx + 2
+            
+        for i in range(n_double):
+            w_new.col_del(-1)
+        w = w_new
 
-    return w_new
+    return w
 
 def print_symbolic_equation(
     weights:list, 
@@ -67,7 +70,7 @@ def print_symbolic_equation(
     expr = convert_to_symbols(var_names)
 
     for w in weights:
-        w = filter_weights(w, threshold)
+        w = filter_weights(sp.Matrix(w), threshold)
         expr = expr * w
         expr = apply_activation_fns(expr, funcs, n_double)
     
