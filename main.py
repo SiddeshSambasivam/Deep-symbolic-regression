@@ -1,3 +1,4 @@
+import math
 import os
 
 import torch 
@@ -163,12 +164,12 @@ def trainer(n_layers, funcs:list, func_name, var_names:list, dataset:Dataset, ep
 
             # Save the model
             # check if the directory exists
-            if not os.path.exists('./models/func_name/'):
-                os.makedirs('./models/func_name/')
+            if not os.path.exists(f'./models/{func_name}/'):
+                os.makedirs(f'./models/{func_name}/')
 
-            torch.save(model.state_dict(), './models/func_name/' + func_name + '_trial_' +str(trial) + '.pth')
+            torch.save(model.state_dict(), f'./models/{func_name}/' + func_name + '_trial_' +str(trial) + '.pth')
             # Write the expr to a json with other hyperparameters
-            with open('./models/func_name/' + func_name + '_' + str(trial) + '.json', 'w') as f:
+            with open(f'./models/{func_name}/' + func_name + '_' + str(trial) + '.json', 'w') as f:
                 json.dump({
                     'func': func_name,
                     'expr': str(expr),
@@ -182,18 +183,18 @@ def trainer(n_layers, funcs:list, func_name, var_names:list, dataset:Dataset, ep
 
 def main(n_layers:int=2):
     
-    dataset = Dataset(lambda x: x, 256, 100, -1, 1, -2, 2)
+    dataset = Dataset(lambda x, y: np.exp(x+y), 256, 100, -1, 1, -2, 2)
     funcs = [
         *[Constant()] * 2,
         *[Identity()] * 4,
         *[Square()] * 4,
-        *[Sin()] * 2,
         *[Exp()] * 2,
+        
         *[Sigmoid()] * 2,
-        *[Product()] * 2
+        *[Product()] * 2,
     ]
 
-    trainer(n_layers,funcs, 'x', ['x', 'y'], dataset, 10001)
+    trainer(n_layers,funcs, 'exp^(x+y)', ['x', 'y', 'z'], dataset, 10001)
     
 if __name__ == "__main__":
     main()

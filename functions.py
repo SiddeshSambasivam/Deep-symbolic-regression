@@ -150,6 +150,14 @@ class Product(BinaryInpFunction):
     def sp(self, x, y):
         return x*y / self.norm
 
+class Division(BinaryInpFunction):
+
+    def torch(self, x, y):
+        return (x/y)/self.norm
+
+    def sp(self, x, y):
+        return (x/y) / self.norm
+
 def count_singular_fns(funcs) -> int:
     count = 0
     for func in funcs:
